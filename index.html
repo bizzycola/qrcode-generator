@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QR Code Generator</title>
+    <link href="lib/tailwind.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        html,
+        body,
+        #app {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="w-full h-full bg-gray-800 absolute flex flex-row justify-center items-center">
+        <div class="bg-gray-300 m-auto shadow-lg p-5 rounded">
+            <div class="flex flex-col justify-center w-full h-full items-center">
+                <div class="flex flex-row items-center h-10 rounded border-gray-900 bg-gray-800 border-1 text-white ">
+                    <input type="text" placeholder="Link"
+                        class="h-full px-4 flex-1 text-current bg-transparent focus:outline-none" id="linkBox"
+                        value="https://google.com">
+                    <button class="h-full flex-2 pr-2 pl-2 border-l-gray-900 border-l-1 hover:bg-gray-700"
+                        id="genBtn">Generate</button>
+                </div>
+                <div id="qrcode" class="m-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/qrcode.min.js"></script>
+    <script>
+        window.onload = () => {
+            let btn = document.getElementById("genBtn")
+            let link = document.getElementById("linkBox")
+            let qr = document.getElementById("qrcode");
+
+            var gen = new QRCode(qr)
+            btn.onclick = () => {
+                gen.makeCode(link.value)
+            }
+        }
+    </script>
+</body>
+
+</html>
