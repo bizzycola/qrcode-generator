@@ -9,4 +9,5 @@ docker run -it --rm -d -p 8080:80 --name web webserver
 ```
 
 Preview:
+
 ![preview image](https://i.imgur.com/pN5nlbW.png)
