@@ -16,4 +16,4 @@ TailwindCSS: https://github.com/tailwindlabs/tailwindcss
 
 Preview:
 
-![preview image](https://i.imgur.com/vh2AmMw.png)
+![preview image](https://i.imgur.com/VMe8ao0.png)
