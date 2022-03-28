@@ -46,6 +46,11 @@
     <script src="lib/qrcode.min.js"></script>
     <script>
         window.onload = () => {
+            // Check query params
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+            
             let btn = document.getElementById("genBtn")
             let link = document.getElementById("linkBox")
             let qr = document.getElementById("qrcode");
@@ -53,6 +58,14 @@
             var gen = new QRCode(qr)
             btn.onclick = () => {
                 gen.makeCode(link.value)
+            }
+
+            const qlink = params.link
+            if(qlink && qlink.trim() !== '') {
+                link.value = qlink
+
+                console.log('link', qlink)
+                gen.makeCode(qlink)
             }
         }
     </script>
