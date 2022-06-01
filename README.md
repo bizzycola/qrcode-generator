@@ -10,9 +10,11 @@ docker run -it --rm -d -p 8080:80 --name web webserver
 
 Libraries:
 
-QRCodeJS: https://github.com/davidshimjs/qrcodejs
+QRCode-SVG: https://github.com/papnkukn/qrcode-svg
 
 TailwindCSS: https://github.com/tailwindlabs/tailwindcss
+
+CanvG: https://github.com/canvg/canvg
 
 Preview:
 

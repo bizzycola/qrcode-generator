@@ -13,18 +13,35 @@
             padding: 0;
             font-family: 'Inter', sans-serif;
         }
+
+        svg {
+            width: 256px;
+            height: 256px;
+        }
+
+        .mwh {
+            min-width: 380px;
+            min-height: 290px;
+        }
+
+        a {
+            color: rgb(34, 125, 230);
+        }
+        a:hover {
+            color: rgb(0, 105, 224);
+        }
     </style>
 </head>
 
 <body>
     <div class="w-full h-full bg-gray-800 absolute flex flex-row justify-center items-center">
-        <div class="bg-gray-300 m-auto shadow-lg p-5 rounded">
-            <div class="flex flex-col justify-center w-full h-full items-center">
-                <div class="flex flex-row items-center h-10 rounded border-gray-900 bg-gray-800 border-1 text-white ">
+        <div class="bg-gray-300 m-auto shadow-lg p-5 rounded w-1/4 h-auto mwh">
+            <div class="flex flex-col justify-start w-full h-full items-center">
+                <div class="flex flex-row items-center h-14 rounded border-gray-900 bg-gray-800 border-1 text-white mb-2 w-full">
                     <a class="flex-2 p-2 block flex flex-row items-center justify-center hover:bg-gray-700 h-full" href="https://github.com/zxing/zxing/wiki/Barcode-Contents" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                              aria-hidden="true" role="img" width="1em" height="1em"
-                            preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                            preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" style="width: 1em !important; height: 1em !important;">
                             <g fill="none">
                                 <path
                                     d="M13 22h-3v-3h3v3zm0-5h-3v-.007c0-1.65 0-3.075.672-4.073a6.304 6.304 0 0 1 1.913-1.62c.334-.214.649-.417.914-.628a3.712 3.712 0 0 0 1.332-3.824A3.033 3.033 0 0 0 9 8H6a6 6 0 0 1 6-6a6.04 6.04 0 0 1 5.434 3.366a6.017 6.017 0 0 1-.934 6.3c-.453.502-.96.95-1.514 1.337a7.248 7.248 0 0 0-1.316 1.167A4.23 4.23 0 0 0 13 17z"
@@ -38,13 +55,44 @@
                     <button class="h-full flex-2 pr-2 pl-2 border-l-gray-900 border-l-1 hover:bg-gray-700"
                         id="genBtn">Generate</button>
                 </div>
-                <div id="qrcode" class="m-2" style="border: 10px solid white;"></div>
+                <div id="qrcode" class="m-2"></div>
+                <!-- download links -->
+                <div>
+                    <a href="#" id="dlpng" class="mr-14 text-blue">PNG</a>
+                    <a href="#" id="dlsvg" class="ml-14">SVG</a>
+                </div>
+
+                <canvas id="canv" style="display: none" />
             </div>
         </div>
     </div>
 
     <script src="lib/qrcode.min.js"></script>
-    <script>
+    <script type="module">
+        import { Canvg } from 'https://cdn.skypack.dev/canvg@^4.0.0'
+        let lastQuery = 'https://google.com'
+
+        function genSvg(val) {
+            return new QRCode({
+                content: val,
+                container: 'svg-viewbox',
+                join: true,
+                width: "256",
+                height: "256"
+            }).svg()
+        }
+
+        function genPng(val) {
+            const canvas = document.getElementById('canv')
+            const ctx = canvas.getContext('2d')
+            const svg = genSvg(val)
+
+            const rend = Canvg.fromString(ctx, svg)
+            rend.start()
+
+            return canvas.toDataURL('img/png')
+        }
+
         window.onload = () => {
             // Check query params
             const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -55,17 +103,43 @@
             let link = document.getElementById("linkBox")
             let qr = document.getElementById("qrcode");
 
-            var gen = new QRCode(qr)
             btn.onclick = () => {
-                gen.makeCode(link.value)
+                qr.innerHTML = genSvg(link.value)
+                lastQuery = link.value
             }
 
             const qlink = params.link
             if(qlink && qlink.trim() !== '') {
                 link.value = qlink
 
-                console.log('link', qlink)
-                gen.makeCode(qlink)
+                qr.innerHTML = genSvg(qlink)
+                lastQuery = qlink
+            }
+            else
+                qr.innerHTML = genSvg('https://google.com')
+            
+            // Download
+            var dlPng = document.getElementById('dlpng')
+            var dlSvg = document.getElementById('dlsvg')
+
+            dlPng.onclick = () => {
+                var link = document.createElement('a')
+
+                link.download = `${encodeURI(lastQuery)}.png`
+                link.href = genPng(lastQuery)
+
+                link.click()
+            }
+
+            dlSvg.onclick = () => {
+                const svgBlob = new Blob([genSvg(lastQuery)], {type:"image/svg+xml;charset=utf-8"})
+                const svgUrl = URL.createObjectURL(svgBlob)
+
+                let link = document.createElement('a')
+                link.download = `${encodeURI(lastQuery)}.svg`
+                link.href = svgUrl
+
+                link.click()
             }
         }
     </script>
