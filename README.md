@@ -34,4 +34,5 @@ CanvG: https://github.com/canvg/canvg
 
 Preview:
 
-![preview image]([https://i.imgur.com/VMe8ao0.png](https://user-images.githubusercontent.com/845115/274194166-8cdd4049-320d-4954-b197-446c44cb3d12.png)https://user-images.githubusercontent.com/845115/274194166-8cdd4049-320d-4954-b197-446c44cb3d12.png)
+![preview image](https://github.com/bizzycola/qrcode-generator/assets/845115/602d73bd-6d63-4430-a8f2-a5a05204a5ad)
+
