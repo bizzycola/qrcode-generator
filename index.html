@@ -37,6 +37,7 @@
     <div class="w-full h-full bg-gray-800 absolute flex flex-row justify-center items-center">
         <div class="bg-gray-300 m-auto shadow-lg p-5 rounded w-1/4 h-auto mwh">
             <div class="flex flex-col justify-start w-full h-full items-center">
+                <!--TEXT-->
                 <div class="flex flex-row items-center h-14 rounded border-gray-900 bg-gray-800 border-1 text-white mb-2 w-full">
                     <a class="flex-2 p-2 block flex flex-row items-center justify-center hover:bg-gray-700 h-full" href="https://github.com/zxing/zxing/wiki/Barcode-Contents" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -54,6 +55,18 @@
                         value="https://google.com">
                     <button class="h-full flex-2 pr-2 pl-2 border-l-gray-900 border-l-1 hover:bg-gray-700"
                         id="genBtn">Generate</button>
+                </div>
+                <!--WIFI-->
+                <div class="flex flex-row items-center h-14 pl-1 rounded border-gray-900 bg-gray-800 border-1 text-white mb-2 w-full max-w-full">
+                    <input type="text" placeholder="Wifi SSID"
+                        class="h-full pl-1 text-current bg-transparent focus:outline-none w-full" id="ssidBox"
+                        value="">
+                    <input type="password" placeholder="Password"
+                        class="h-full pl-1 text-current bg-transparent focus:outline-none w-full" id="pwdBox"
+                        value="">
+
+                    <button class="h-full pl-2 text-right pr-2 border-l-gray-900 border-l-1 hover:bg-gray-700 rounded-r-md"
+                        id="genWifiBtn">Generate</button>
                 </div>
                 <div id="qrcode" class="m-2"></div>
                 <!-- download links -->
@@ -93,6 +106,9 @@
             return canvas.toDataURL('img/png')
         }
 
+        // Wifi QR Code
+        // Format: WIFI:S:SSID_NAME;H:true;T:WPA2;P:PASSWORD;;
+
         window.onload = () => {
             // Check query params
             const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -103,9 +119,24 @@
             let link = document.getElementById("linkBox")
             let qr = document.getElementById("qrcode");
 
+            let genWifiBtn = document.getElementById("genWifiBtn")
+            let ssidBox = document.getElementById("ssidBox")
+            let pwdBox = document.getElementById("pwdBox")
+
+            // Standard QR
             btn.onclick = () => {
                 qr.innerHTML = genSvg(link.value)
                 lastQuery = link.value
+            }
+
+            // Wifi QR
+            genWifiBtn.onclick = () => {
+                const ssid = ssidBox.value
+                const pwd = pwdBox.value
+
+                const wifi = `WIFI:S:${ssid};H:true;T:WPA2;P:${pwd};;`
+                qr.innerHTML = genSvg(wifi)
+                lastQuery = wifi
             }
 
             const qlink = params.link
