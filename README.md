@@ -34,5 +34,6 @@ CanvG: https://github.com/canvg/canvg
 
 Preview:
 
-![preview image](https://github.com/bizzycola/qrcode-generator/assets/845115/602d73bd-6d63-4430-a8f2-a5a05204a5ad)
+![preview](https://github.com/bizzycola/qrcode-generator/assets/845115/145411dc-b93b-4709-bf9d-022cf61a46df)
+
 
