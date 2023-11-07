@@ -4,6 +4,8 @@
 Basic docker container with a HTML/CSS/JS ui to generate a QR Code from a provided URL.
 Uses tailwind CSS and qrcode.js
 
+Latest version allows generating WIFI QR codes!
+
 Usage:
 ```
 docker build -t webserver .
@@ -32,4 +34,5 @@ CanvG: https://github.com/canvg/canvg
 
 Preview:
 
-![preview image](https://i.imgur.com/VMe8ao0.png)
+![preview image](https://github.com/bizzycola/qrcode-generator/assets/845115/602d73bd-6d63-4430-a8f2-a5a05204a5ad)
+
