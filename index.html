@@ -71,11 +71,19 @@
                 <div id="qrcode" class="m-2"></div>
                 <!-- download links -->
                 <div>
-                    <a href="#" id="dlpng" class="mr-14 text-blue">PNG</a>
-                    <a href="#" id="dlsvg" class="ml-14">SVG</a>
+                    <a href="#" id="dlpng" class="mr-2 text-blue">PNG</a>
+
+                    <select id="imgSize" name="imgSize" class="mt-2 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 inline">
+                        <option value="256" selected>256px</option>
+                        <option value="512">512px</option>
+                        <option value="1024">1024px</option>
+                        <option value="2048">2048px</option>
+                      </select>
+
+                    <a href="#" id="dlsvg" class="ml-2">SVG</a>
                 </div>
 
-                <canvas id="canv" style="display: none" />
+                <canvas id="canv" style="display: none" width="512" height="512" />
             </div>
         </div>
     </div>
@@ -85,18 +93,23 @@
         import { Canvg } from 'https://cdn.skypack.dev/canvg@^4.0.0'
         let lastQuery = 'https://google.com'
 
+        const size = document.getElementById('imgSize')
+
         function genSvg(val) {
             return new QRCode({
                 content: val,
                 container: 'svg-viewbox',
                 join: true,
-                width: "256",
-                height: "256"
+                width: size.value,
+                height: size.value
             }).svg()
         }
 
         function genPng(val) {
             const canvas = document.getElementById('canv')
+            canvas.width = size.value
+            canvas.height = size.value
+
             const ctx = canvas.getContext('2d')
             const svg = genSvg(val)
 
