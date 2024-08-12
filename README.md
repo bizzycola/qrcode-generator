@@ -1,7 +1,7 @@
 # QR Code Generator UI
 [![Docker](https://img.shields.io/badge/Docker-Hub-blue)](https://hub.docker.com/r/bizzycolah/qrcode-generator)
 
-Basic docker container with a HTML/CSS/JS ui to generate a QR Code from a provided URL.
+Basic docker container with a HTML/CSS/JS UI to generate a QR Code from a provided URL.
 Uses tailwind CSS and qrcode.js
 
 Latest version allows generating WIFI QR codes!
