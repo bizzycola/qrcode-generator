@@ -27,8 +27,29 @@
         a {
             color: rgb(34, 125, 230);
         }
+
         a:hover {
             color: rgb(0, 105, 224);
+        }
+
+        .loader-svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .loader-spin {
+            animation: spinner 0.9s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes spinner {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -37,48 +58,30 @@
     <div class="w-full h-full bg-gray-800 absolute flex flex-row justify-center items-center">
         <div class="bg-gray-300 m-auto shadow-lg p-5 rounded w-1/4 h-auto mwh">
             <div class="flex flex-col justify-start w-full h-full items-center">
-                <!--TEXT-->
-                <div class="flex flex-row items-center h-14 rounded border-gray-900 bg-gray-800 border-1 text-white mb-2 w-full">
-                    <a class="flex-2 p-2 block flex flex-row items-center justify-center hover:bg-gray-700 h-full" href="https://github.com/zxing/zxing/wiki/Barcode-Contents" target="_blank">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                             aria-hidden="true" role="img" width="1em" height="1em"
-                            preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" style="width: 1em !important; height: 1em !important;">
-                            <g fill="none">
-                                <path
-                                    d="M13 22h-3v-3h3v3zm0-5h-3v-.007c0-1.65 0-3.075.672-4.073a6.304 6.304 0 0 1 1.913-1.62c.334-.214.649-.417.914-.628a3.712 3.712 0 0 0 1.332-3.824A3.033 3.033 0 0 0 9 8H6a6 6 0 0 1 6-6a6.04 6.04 0 0 1 5.434 3.366a6.017 6.017 0 0 1-.934 6.3c-.453.502-.96.95-1.514 1.337a7.248 7.248 0 0 0-1.316 1.167A4.23 4.23 0 0 0 13 17z"
-                                    fill="currentColor" />
-                            </g>
-                        </svg>
-                    </a>
-                    <input type="text" placeholder="Content"
-                        class="h-full pr-4 pl-1 flex-1 text-current bg-transparent focus:outline-none" id="linkBox"
-                        value="https://google.com">
-                    <button class="h-full flex-2 pr-2 pl-2 border-l-gray-900 border-l-1 hover:bg-gray-700"
-                        id="genBtn">Generate</button>
+                <select id="qrType" name="qrType"
+                    class="bg-gray-800 rounded-md border-0 py-3.5 pl-3 pr-10 text-gray-100 w-full mb-2 "></select>
+                <div id="initLoader" class="w-full mb-2 flex flex-col items-center justify-center text-gray-700">
+                    <svg class="loader-svg loader-spin" viewBox="0 0 24 24" aria-label="Loading">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.35" stroke-width="3"
+                            fill="none"></circle>
+                        <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                            fill="none"></path>
+                    </svg>
                 </div>
-                <!--WIFI-->
-                <div class="flex flex-row items-center h-14 pl-1 rounded border-gray-900 bg-gray-800 border-1 text-white mb-2 w-full max-w-full">
-                    <input type="text" placeholder="Wifi SSID"
-                        class="h-full pl-1 text-current bg-transparent focus:outline-none w-full" id="ssidBox"
-                        value="">
-                    <input type="password" placeholder="Password"
-                        class="h-full pl-1 text-current bg-transparent focus:outline-none w-full" id="pwdBox"
-                        value="">
+                <div id="inputs" class="w-full hidden"></div>
 
-                    <button class="h-full pl-2 text-right pr-2 border-l-gray-900 border-l-1 hover:bg-gray-700 rounded-r-md"
-                        id="genWifiBtn">Generate</button>
-                </div>
-                <div id="qrcode" class="m-2"></div>
+                <div id="qrcode" class="m-2 hidden"></div>
                 <!-- download links -->
                 <div>
                     <a href="#" id="dlpng" class="mr-2 text-blue">PNG</a>
 
-                    <select id="imgSize" name="imgSize" class="mt-2 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 inline">
+                    <select id="imgSize" name="imgSize"
+                        class="mt-2 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 inline">
                         <option value="256" selected>256px</option>
                         <option value="512">512px</option>
                         <option value="1024">1024px</option>
                         <option value="2048">2048px</option>
-                      </select>
+                    </select>
 
                     <a href="#" id="dlsvg" class="ml-2">SVG</a>
                 </div>
@@ -94,6 +97,182 @@
         let lastQuery = 'https://google.com'
 
         const size = document.getElementById('imgSize')
+
+        const qrTypes = {
+            url: {
+                name: 'URL / Text',
+                fields: [
+                    {
+                        id: 'urlBox',
+                        placeholder: 'URL',
+                        type: 'text'
+                    }
+                ],
+                format: (vals) => vals[0],
+                inline: true,
+                helpLink: "https://github.com/zxing/zxing/wiki/Barcode-Contents"
+            },
+            wifi: {
+                name: 'WIFI',
+                fields: [
+                    {
+                        id: 'ssidBox',
+                        placeholder: 'SSID',
+                        type: 'text'
+                    },
+                    {
+                        id: 'pwdBox',
+                        placeholder: 'Password',
+                        type: 'password'
+                    }
+                ],
+                format: (vals) => `WIFI:S:${vals[0]};H:true;T:WPA2;P:${vals[1]};;`,
+                inline: true,
+                helpLink: "https://github.com/zxing/zxing/wiki/Barcode-Contents"
+            }
+        }
+
+        function genDropdown() {
+            const qrType = document.getElementById('qrType')
+            for (const key in qrTypes) {
+                const option = document.createElement('option')
+                option.value = key
+                option.textContent = qrTypes[key].name
+
+                qrType.appendChild(option)
+            }
+        }
+
+        function genInputsForSelectedOption() {
+            const qrType = document.getElementById('qrType').value
+            const inputs = document.getElementById('inputs')
+            inputs.innerHTML = ''
+
+            const config = qrTypes[qrType]
+            const fields = config.fields
+            const isInline = config.inline ?? config.inlineFields ?? false
+            const helpLink = (config.helpLink ?? '').trim()
+
+            const container = document.createElement('div')
+            container.classList.add('flex', 'rounded', 'border-gray-900', 'bg-gray-800', 'border-1', 'text-white', 'mb-2', 'w-full', 'max-w-full')
+
+            if (isInline) {
+                container.classList.add('flex-row', 'items-center', 'h-14')
+            } else {
+                container.classList.add('flex-row', 'items-stretch')
+            }
+
+            if (helpLink !== '') {
+                const help = document.createElement('a')
+                help.href = helpLink
+                help.target = '_blank'
+                help.rel = 'noopener noreferrer'
+                help.classList.add('p-2', 'block', 'flex', 'flex-row', 'items-center', 'justify-center', 'hover:bg-gray-700', 'shrink-0')
+
+                if (isInline) {
+                    help.classList.add('h-full')
+                } else {
+                    help.classList.add('self-stretch')
+                }
+
+                help.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" style="width: 1em !important; height: 1em !important;">
+                        <g fill="none">
+                            <path d="M13 22h-3v-3h3v3zm0-5h-3v-.007c0-1.65 0-3.075.672-4.073a6.304 6.304 0 0 1 1.913-1.62c.334-.214.649-.417.914-.628a3.712 3.712 0 0 0 1.332-3.824A3.033 3.033 0 0 0 9 8H6a6 6 0 0 1 6-6a6.04 6.04 0 0 1 5.434 3.366a6.017 6.017 0 0 1-.934 6.3c-.453.502-.96.95-1.514 1.337a7.248 7.248 0 0 0-1.316 1.167A4.23 4.23 0 0 0 13 17z" fill="currentColor" />
+                        </g>
+                    </svg>
+                `
+                container.appendChild(help)
+            }
+
+            const fieldsContainer = document.createElement('div')
+            fieldsContainer.classList.add('flex', 'flex-1')
+
+            if (isInline) {
+                fieldsContainer.classList.add('flex-row', 'items-center', 'h-full')
+            } else {
+                fieldsContainer.classList.add('flex-col')
+            }
+
+            const generateBtn = document.createElement('button')
+            generateBtn.type = 'button'
+            generateBtn.textContent = 'Generate'
+            generateBtn.classList.add('pl-3', 'pr-3', 'border-l-gray-900', 'border-l-1', 'hover:bg-gray-700', 'shrink-0')
+
+            if (isInline) {
+                generateBtn.classList.add('h-full')
+            } else {
+                generateBtn.classList.add('self-stretch')
+            }
+
+            generateBtn.onclick = generateFromSelectedOption
+
+            fields.forEach((field, index) => {
+                const input = document.createElement('input')
+
+                input.type = field.type
+                input.placeholder = field.placeholder
+                input.id = field.id
+
+                if (isInline) {
+                    input.classList.add('h-full', 'pl-3', 'text-current', 'bg-transparent', 'focus:outline-none', 'w-full')
+                } else {
+                    input.classList.add('py-3', 'px-2', 'text-current', 'bg-transparent', 'focus:outline-none', 'w-full')
+                    if (index > 0) {
+                        input.classList.add('border-t-1', 'border-t-gray-700')
+                    }
+                }
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault()
+                        generateBtn.click()
+                    }
+                })
+
+                fieldsContainer.appendChild(input)
+            })
+
+            container.appendChild(fieldsContainer)
+            container.appendChild(generateBtn)
+            inputs.appendChild(container)
+        }
+
+        function generateFromSelectedOption() {
+            const qrType = document.getElementById('qrType').value
+            const config = qrTypes[qrType]
+
+            const values = config.fields.map((field) => {
+                const el = document.getElementById(field.id)
+                return el ? el.value : ''
+            })
+
+            const val = config.format(values)
+            const qr = document.getElementById("qrcode")
+
+            qr.innerHTML = genSvg(val)
+            lastQuery = val
+        }
+
+        function setInitialLoading(isLoading) {
+            const loader = document.getElementById('initLoader')
+            const inputs = document.getElementById('inputs')
+            const qr = document.getElementById('qrcode')
+
+            if (!loader || !inputs || !qr) {
+                return
+            }
+
+            if (isLoading) {
+                loader.classList.remove('hidden')
+                inputs.classList.add('hidden')
+                qr.classList.add('hidden')
+            } else {
+                loader.classList.add('hidden')
+                inputs.classList.remove('hidden')
+                qr.classList.remove('hidden')
+            }
+        }
 
         function genSvg(val) {
             return new QRCode({
@@ -119,49 +298,34 @@
             return canvas.toDataURL('img/png')
         }
 
-        // Wifi QR Code
-        // Format: WIFI:S:SSID_NAME;H:true;T:WPA2;P:PASSWORD;;
-
         window.onload = () => {
             // Check query params
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
             });
-            
-            let btn = document.getElementById("genBtn")
-            let link = document.getElementById("linkBox")
+
             let qr = document.getElementById("qrcode");
+            setInitialLoading(true)
 
-            let genWifiBtn = document.getElementById("genWifiBtn")
-            let ssidBox = document.getElementById("ssidBox")
-            let pwdBox = document.getElementById("pwdBox")
-
-            // Standard QR
-            btn.onclick = () => {
-                qr.innerHTML = genSvg(link.value)
-                lastQuery = link.value
-            }
-
-            // Wifi QR
-            genWifiBtn.onclick = () => {
-                const ssid = ssidBox.value
-                const pwd = pwdBox.value
-
-                const wifi = `WIFI:S:${ssid};H:true;T:WPA2;P:${pwd};;`
-                qr.innerHTML = genSvg(wifi)
-                lastQuery = wifi
-            }
+            genDropdown();
+            document.getElementById('qrType').addEventListener('change', genInputsForSelectedOption)
+            genInputsForSelectedOption();
 
             const qlink = params.link
-            if(qlink && qlink.trim() !== '') {
-                link.value = qlink
-
-                qr.innerHTML = genSvg(qlink)
-                lastQuery = qlink
-            }
-            else
+            if (qlink && qlink.trim() !== '') {
+                const urlField = document.getElementById('urlBox')
+                if (urlField) {
+                    urlField.value = qlink
+                    generateFromSelectedOption()
+                } else {
+                    qr.innerHTML = genSvg(qlink)
+                    lastQuery = qlink
+                }
+            } else {
                 qr.innerHTML = genSvg('https://google.com')
-            
+            }
+            setInitialLoading(false)
+
             // Download
             var dlPng = document.getElementById('dlpng')
             var dlSvg = document.getElementById('dlsvg')
@@ -170,27 +334,34 @@
                 const dataUrl = genPng(lastQuery)
                 const blob = await (await fetch(dataUrl)).blob()
                 const blobUrl = URL.createObjectURL(blob)
+
                 var link = document.createElement('a')
                 link.download = `${encodeURI(lastQuery)}.png`
                 link.href = blobUrl
+
                 document.body.appendChild(link)
                 link.click()
+
                 document.body.removeChild(link)
                 URL.revokeObjectURL(blobUrl)
             }
 
             dlSvg.onclick = async (e) => {
                 e.preventDefault()
-                const svgBlob = new Blob([genSvg(lastQuery)], {type:"image/svg+xml"})
+                const svgBlob = new Blob([genSvg(lastQuery)], { type: "image/svg+xml" })
                 const svgUrl = URL.createObjectURL(svgBlob)
+
                 let link = document.createElement('a')
                 link.download = `${encodeURI(lastQuery)}.svg`
                 link.href = svgUrl
+
                 document.body.appendChild(link)
                 link.click()
+
                 document.body.removeChild(link)
                 URL.revokeObjectURL(svgUrl)
             }
+
         }
     </script>
 </body>
