@@ -166,24 +166,30 @@
             var dlPng = document.getElementById('dlpng')
             var dlSvg = document.getElementById('dlsvg')
 
-            dlPng.onclick = () => {
+            dlPng.onclick = async () => {
+                const dataUrl = genPng(lastQuery)
+                const blob = await (await fetch(dataUrl)).blob()
+                const blobUrl = URL.createObjectURL(blob)
                 var link = document.createElement('a')
-
                 link.download = `${encodeURI(lastQuery)}.png`
-                link.href = genPng(lastQuery)
-
+                link.href = blobUrl
+                document.body.appendChild(link)
                 link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(blobUrl)
             }
 
-            dlSvg.onclick = () => {
-                const svgBlob = new Blob([genSvg(lastQuery)], {type:"image/svg+xml;charset=utf-8"})
+            dlSvg.onclick = async (e) => {
+                e.preventDefault()
+                const svgBlob = new Blob([genSvg(lastQuery)], {type:"image/svg+xml"})
                 const svgUrl = URL.createObjectURL(svgBlob)
-
                 let link = document.createElement('a')
                 link.download = `${encodeURI(lastQuery)}.svg`
                 link.href = svgUrl
-
+                document.body.appendChild(link)
                 link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(svgUrl)
             }
         }
     </script>
